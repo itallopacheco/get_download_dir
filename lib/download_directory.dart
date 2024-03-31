@@ -1,21 +1,14 @@
-import 'package:path_provider/path_provider.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:flutter/services.dart';
 
-class DownloadDirectory {
-  static Future<String?> getDownloadDirectory() async {
-    final downloadsDirectory = await getDownloadsDirectory();
-    return downloadsDirectory == null ? null : downloadsDirectory.path;
-  }
-}
+class DownloadPath {
+  static const MethodChannel _channel = const MethodChannel('download_path');
 
-//TESTE
-void main() async {
-  // Obtém o diretório de downloads
-  String? downloadDirectory = await DownloadDirectory.getDownloadDirectory();
+  static Future<Directory?> downloadsDirectory({String? dirType}) async {
+    final String? path = await _channel
+        .invokeMethod('getDownloadsDirectory', {'directoryType': dirType});
 
-  // Verifica se o diretório de downloads foi encontrado
-  if (downloadDirectory != null) {
-    print('O diretório de downloads é: $downloadDirectory');
-  } else {
-    print('Não foi possível encontrar o diretório de downloads.');
+    return path == null ? null : Directory(path);
   }
 }
